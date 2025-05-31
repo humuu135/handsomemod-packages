@@ -827,6 +827,7 @@ f_main() {
 								#
 								retrycnt="1"
 								f_getcfg "${sta_radio}" "${sta_essid}" "${sta_bssid}"
+								[ -f /etc/travelmate/before_join.sh ] && sh /etc/travelmate/before_join.sh "${sta_radio}" "${sta_essid}" "${sta_bssid}"
 								while [ "${retrycnt}" -le "${trm_maxretry}" ]; do
 									sta_mac="$(f_mac "set" "${section}")"
 									uci_set "wireless" "${section}" "disabled" "0"
@@ -836,6 +837,7 @@ f_main() {
 										uci_commit "wireless"
 										f_ctrack "start"
 										f_log "info" "connected to uplink '${sta_radio}/${sta_essid}/${sta_bssid:-"-"}' with mac '${sta_mac:-"-"}' (${retrycnt}/${trm_maxretry})"
+										[ -f /etc/travelmate/after_join.sh ] && sh /etc/travelmate/after_join.sh "${sta_radio}" "${sta_essid}" "${sta_bssid}"
 										f_vpn "enable"
 										return 0
 									else
